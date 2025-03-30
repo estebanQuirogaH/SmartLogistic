@@ -1,4 +1,4 @@
-package com.example.smartLogistics;
+package com.projectStore;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

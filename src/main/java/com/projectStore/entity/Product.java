@@ -1,4 +1,4 @@
-package com.example.model;
+package com.projectStore.entity;
 
 public class Product {
     
