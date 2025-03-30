@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Auditorías del Sistema</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Auditorías del Sistema</h1>
+        <nav>
+            <ul>
+                <li><a href="/superadmin">Inicio</a></li>
+                <li><a href="/superadmin/parameters">Parámetros</a></li>
+                <li><a href="/superadmin/admins/create">Crear Administradores</a></li>
+                <li><a href="/superadmin/audits">Auditorías</a></li>
+                <li><a href="/logout">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Registro de Auditorías</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Usuario</th>
+                        <th>IP</th>
+                        <th>Tienda</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="audit : ${audits}">
+                        <td th:text="${#dates.format(audit.timestamp, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                        <td th:text="${audit.userName}"></td>
+                        <td th:text="${audit.ipAddress}"></td>
+                        <td th:text="${audit.storeName ?: '-'}"></td>
+                        <td th:text="${audit.description}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sistema de Gestión de Tiendas - 2025</p>
+    </footer>
+</body>
+
+</html>
