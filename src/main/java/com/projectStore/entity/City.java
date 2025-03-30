@@ -1,4 +1,4 @@
-package com.example.model;
+package com.projectStore.entity;
 import java.util.ArrayList;
 
 public class City {
