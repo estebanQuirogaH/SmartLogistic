@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Crear Administrador</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Crear Administrador</h1>
+        <nav>
+            <ul>
+                <li><a href="/superadmin">Inicio</a></li>
+                <li><a href="/superadmin/parameters">Parámetros</a></li>
+                <li><a href="/superadmin/admins/create">Crear Administradores</a></li>
+                <li><a href="/superadmin/audits">Auditorías</a></li>
+                <li><a href="/logout">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Crear Nuevo Administrador</h2>
+
+            <form action="/superadmin/admins/create" method="POST">
+                <div class="form-group">
+                    <label for="name">Nombre:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="documentType">Tipo de Documento:</label>
+                    <select id="documentType" name="documentType" required>
+                        <option value="">Seleccione...</option>
+                        <option th:each="docType : ${documentTypes}" th:value="${docType}" th:text="${docType}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="documentNumber">Número de Documento:</label>
+                    <input type="text" id="documentNumber" name="documentNumber" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Tiendas Asignadas:</label>
+                    <div class="checkbox-group">
+                        <div th:each="store : ${stores}">
+                            <input type="checkbox" th:id="'store-' + ${store.id}" th:name="assignedStoreIds"
+                                th:value="${store.id}">
+                            <label th:for="'store-' + ${store.id}" th:text="${store.name}"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Crear Administrador</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sistema de Gestión de Tiendas - 2025</p>
+    </footer>
+</body>
+
+</html>

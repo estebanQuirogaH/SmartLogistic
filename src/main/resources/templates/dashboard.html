@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>SuperAdmin Dashboard</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Panel de SuperAdministrador</h1>
+        <nav>
+            <ul>
+                <li><a href="/superadmin">Inicio</a></li>
+                <li><a href="/superadmin/parameters">Parámetros</a></li>
+                <li><a href="/superadmin/admins/create">Crear Administradores</a></li>
+                <li><a href="/superadmin/audits">Auditorías</a></li>
+                <li><a href="/logout">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Resumen</h2>
+            <div class="dashboard-card">
+                <h3>Parámetros del Sistema</h3>
+                <ul>
+                    <li th:each="param : ${parameters}">
+                        <span th:text="${param.name}"></span>:
+                        <span th:text="${param.value}"></span>
+                    </li>
+                </ul>
+                <a href="/superadmin/parameters" class="btn">Gestionar Parámetros</a>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Administradores</h3>
+                <p th:text="'Total: ' + ${admins.size()}"></p>
+                <a href="/superadmin/admins/create" class="btn">Crear Administrador</a>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Tiendas</h3>
+                <p th:text="'Total: ' + ${stores.size()}"></p>
+                <a href="/superadmin/stores" class="btn">Ver Tiendas</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sistema de Gestión de Tiendas - 2025</p>
+    </footer>
+</body>
+
+</html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>SuperAdmin Dashboard</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Panel de SuperAdministrador</h1>
+        <nav>
+            <ul>
+                <li><a href="/superadmin">Inicio</a></li>
+                <li><a href="/superadmin/parameters">Parámetros</a></li>
+                <li><a href="/superadmin/admins/create">Crear Administradores</a></li>
+                <li><a href="/superadmin/audits">Auditorías</a></li>
+                <li><a href="/logout">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Resumen</h2>
+            <div class="dashboard-card">
+                <h3>Parámetros del Sistema</h3>
+                <ul>
+                    <li th:each="param : ${parameters}">
+                        <span th:text="${param.name}"></span>:
+                        <span th:text="${param.value}"></span>
+                    </li>
+                </ul>
+                <a href="/superadmin/parameters" class="btn">Gestionar Parámetros</a>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Administradores</h3>
+                <p th:text="'Total: ' + ${admins.size()}"></p>
+                <a href="/superadmin/admins/create" class="btn">Crear Administrador</a>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Tiendas</h3>
+                <p th:text="'Total: ' + ${stores.size()}"></p>
+                <a href="/superadmin/stores" class="btn">Ver Tiendas</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sistema de Gestión de Tiendas - 2025</p>
+    </footer>
+</body>
+
+</html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>SuperAdmin Dashboard</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Panel de SuperAdministrador</h1>
+        <nav>
+            <ul>
+                <li><a href="/superadmin">Inicio</a></li>
+                <li><a href="/superadmin/parameters">Parámetros</a></li>
+                <li><a href="/superadmin/admins/create">Crear Administradores</a></li>
+                <li><a href="/superadmin/audits">Auditorías</a></li>
+                <li><a href="/logout">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Resumen</h2>
+            <div class="dashboard-card">
+                <h3>Parámetros del Sistema</h3>
+                <ul>
+                    <li th:each="param : ${parameters}">
+                        <span th:text="${param.name}"></span>:
+                        <span th:text="${param.value}"></span>
+                    </li>
+                </ul>
+                <a href="/superadmin/parameters" class="btn">Gestionar Parámetros</a>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Administradores</h3>
+                <p th:text="'Total: ' + ${admins.size()}"></p>
+                <a href="/superadmin/admins/create" class="btn">Crear Administrador</a>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Tiendas</h3>
+                <p th:text="'Total: ' + ${stores.size()}"></p>
+                <a href="/superadmin/stores" class="btn">Ver Tiendas</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sistema de Gestión de Tiendas - 2025</p>
+    </footer>
+</body>
+
+</html>
