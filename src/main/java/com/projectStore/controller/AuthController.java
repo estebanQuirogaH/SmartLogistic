@@ -1,4 +1,4 @@
-package com.projectStore.auth;
+package com.projectStore.controller;
 
 import com.google.firebase.auth.FirebaseAuthException;
 import com.projectStore.service.AuthService;
