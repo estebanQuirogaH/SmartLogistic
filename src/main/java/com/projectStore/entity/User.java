@@ -39,4 +39,7 @@ public class User {
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "rol_id"))
     private List<RoleEntity> roles;
 
+    public List<RoleEntity> getRoles() {
+        return roles;
+    }
 }
