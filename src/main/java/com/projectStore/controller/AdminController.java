@@ -21,7 +21,7 @@ public class AdminController {
 
     @Autowired
     private StoreService storeService;
-    
+
     @Autowired
     private UserService userService;
 
@@ -41,7 +41,7 @@ public class AdminController {
     public ResponseEntity<List<StoreDTO>> getMyStores() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = userService.findById(auth.getId());
-        List<StoreDTO> stores = storeService.getStoresByAdmin(currentUser.getId());
+        List<StoreDTO> stores = storeService.getStoresByAdmin(currentUser);
         return new ResponseEntity<>(stores, HttpStatus.OK);
     }
 
@@ -61,7 +61,7 @@ public class AdminController {
     public ResponseEntity<StoreDTO> createStore(@RequestBody StoreCreationDTO storeDTO) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = userService.findById(auth.getId());
-        
+
         StoreDTO createdStore = storeService.createStore(storeDTO, currentUser.getId());
         return new ResponseEntity<>(createdStore, HttpStatus.CREATED);
     }
@@ -70,11 +70,11 @@ public class AdminController {
      * Actualiza una tienda existente
      */
     @PutMapping("/stores/{id}")
-    public ResponseEntity<StoreDTO> updateStore(@PathVariable Long id, @RequestBody StoreCreationDTO storeDTO) {
+    public ResponseEntity<Store> updateStore(@PathVariable Long id, @RequestBody StoreCreationDTO storeDTO) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = userService.findById(auth.getid());
-        
-        StoreDTO updatedStore = storeService.updateStore(id, storeDTO, currentUser.getId());
+
+        StoreCreationDTO updatedStore = storeService.updateStore(storeDTO);
         return new ResponseEntity<>(updatedStore, HttpStatus.OK);
     }
 
@@ -85,7 +85,7 @@ public class AdminController {
     public ResponseEntity<Void> deleteStore(@PathVariable Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = userService.findById(auth.getId());
-        
+
         storeService.deleteStore(id, currentUser.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
