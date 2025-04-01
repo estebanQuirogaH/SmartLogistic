@@ -11,17 +11,19 @@ import com.projectStore.entity.Person;
 import com.projectStore.entity.RoleEntity;
 import com.projectStore.entity.Store;
 import com.projectStore.entity.User;
+import com.projectStore.service.UserService;
+import com.projectStore.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public interface AdminService {
+public class AdminService {
 
-    private final UserService userService;
-    private final RoleService roleService;
-    private final StoreService storeService;
-    private final AuditService auditService;
+    private UserService userService;
+    private RoleService roleService;
+    private StoreService storeService;
+    private AuditService auditService;
 
     @Transactional
     public User createAdmin(AdminCreationDTO dto, String ipAddress, String creatorUsername) {
@@ -55,7 +57,7 @@ public interface AdminService {
             for (Long storeId : dto.getAssignedStoreIds()) {
                 Store store = storeService.getStoreById(storeId);
                 store.setAdmin(savedAdmin);
-                storeService.updateStore(store);
+                storeService.updateS  tore(store);
 
                 auditService.registerAudit(
                         ipAddress,
