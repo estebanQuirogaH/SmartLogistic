@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Location {
+    private String id;
     private String Description;
     private String latitude; // Latitud de la ubicación
-    private String longitude; // Longitud de la ubicación
+    private String longitude; // Longitud de la ubicación    
 }
