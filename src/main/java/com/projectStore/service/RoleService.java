@@ -1,7 +1,11 @@
 package com.projectStore.service;
 
+import org.springframework.stereotype.Service;
+
 import com.projectStore.entity.RoleEntity;
 import com.projectStore.repository.RoleRepository;
+
+@Service
 
 public class RoleService {
 

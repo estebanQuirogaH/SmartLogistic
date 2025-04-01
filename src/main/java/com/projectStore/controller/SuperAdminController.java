@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.projectStore.dto.AdminCreationDTO;
+import com.projectStore.entity.EDocument;
 import com.projectStore.mapper.ParameterMapper;
 import com.projectStore.service.AdminService;
 import com.projectStore.service.AuditService;
@@ -27,22 +29,22 @@ public class SuperAdminController {
     private final AdminService adminService;
     private final AuditService auditService;
     private final StoreService storeService;
-    private final ParameterMapper parameterMapper;
+    // private final ParameterMapper parameterMapper;
 
     // Página principal
     @GetMapping
     public String superAdminDashboard(Model model) {
         model.addAttribute("parameters", parameterService.getAllParameters());
         model.addAttribute("admins", adminService.getAllAdmins());
-        // model.addAttribute("stores", storeService.getAllStores());
-        return "superadmin/dashboard";
+        model.addAttribute("stores", storeService.getAllStores());
+        return "dashboard";
     }
 
     // Página de configuración de parámetros
     @GetMapping("/parameters")
-    public String parametersPage(Model model) {
+    public ModelAndView parametersPage(Model model) {
         model.addAttribute("parameters", parameterService.getAllParameters());
-        return "superadmin/parameters";
+        return new ModelAndView("parameters");
     }
 
     // Actualizar parámetro
@@ -59,12 +61,12 @@ public class SuperAdminController {
     }
 
     // Página de creación de administradores
-    // @GetMapping("/admins/create")
-    // public String createAdminPage(Model model) {
-    // model.addAttribute("stores", storeService.getAllStores());
-    // model.addAttribute("documentTypes", Arrays.asList(EDocument.values()));
-    // return "superadmin/create-admin";
-    // }
+    @GetMapping("/admins/create")
+    public ModelAndView createAdminPage(Model model) {
+        model.addAttribute("stores", storeService.getAllStores());
+        model.addAttribute("documentTypes", Arrays.asList(EDocument.values()));
+        return new ModelAndView("create-admin");
+    }
 
     // Crear administrador
     @PostMapping("/admins/create")
@@ -75,13 +77,19 @@ public class SuperAdminController {
 
         String ipAddress = request.getRemoteAddr();
         adminService.createAdmin(dto, ipAddress, principal.getName());
-        return "redirect:/superadmin/admins";
+        return "redirect:/admins";
     }
 
     // Página de auditorías
     @GetMapping("/audits")
     public String auditsPage(Model model) {
         model.addAttribute("audits", auditService.getAllAudits());
-        return "superadmin/audits";
+        return "audits";
+    }
+
+    @GetMapping("/logout")
+    public String logoutPage(Model model) {
+        // model.addAttribute("audits", auditService.getAllAudits());
+        return "parameters";
     }
 }

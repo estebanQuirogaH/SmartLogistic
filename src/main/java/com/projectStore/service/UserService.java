@@ -2,10 +2,13 @@ package com.projectStore.service;
 
 import java.util.List;
 
-import com.projectStore.entity.Role;
+import org.springframework.stereotype.Service;
+
+import com.projectStore.entity.RoleEntity;
 import com.projectStore.entity.User;
 import com.projectStore.repository.UserRepository; // Asegúrate de tener este repositorio
 
+@Service
 public class UserService {
 
     private final UserRepository userRepository;
@@ -19,14 +22,12 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
     }
 
-    public List<User> findByRole(Role adminRole) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByRole'");
+    public List<User> findByRole(RoleEntity adminRole) {
+        return userRepository.findByRoles(adminRole);
     }
 
-    public User saveUser(User admin) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'saveUser'");
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 
 }

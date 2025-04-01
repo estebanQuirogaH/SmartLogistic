@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.projectStore.dto.AdminCreationDTO;
 import com.projectStore.entity.Document;
+import com.projectStore.entity.EDocument;
 import com.projectStore.entity.Person;
-import com.projectStore.entity.Role;
 import com.projectStore.entity.RoleEntity;
 import com.projectStore.entity.Store;
 import com.projectStore.entity.User;
@@ -30,13 +30,13 @@ public class AdminService {
         User superAdmin = userService.findByEmail(creatorUsername);
 
         // Crear la persona y su documento
-        // Person person = new Person();
-        // person.setName(dto.getName());
+        Person person = new Person();
+        person.setName(dto.getName());
 
-        // Document document = new Document();
-        // document.setType(EDocument.valueOf(dto.getDocumentType()));
-        // document.setNumber(dto.getDocumentNumber());
-        // person.setDocument(document);
+        Document document = new Document();
+        document.setDocumentType(EDocument.valueOf(dto.getDocumentType()));
+        document.setDocumentNumber(dto.getDocumentNumber());
+        person.setDocument(document);
 
         // Crear el usuario administrador
         User admin = new User();
@@ -61,6 +61,7 @@ public class AdminService {
                 auditService.registerAudit(
                         ipAddress,
                         "Tienda asignada a administrador: " + store.getName() + " -> " + admin.getEmail(),
+
                         superAdmin,
                         store);
             }
@@ -77,7 +78,7 @@ public class AdminService {
     }
 
     public List<User> getAllAdmins() {
-        Role adminRole = roleService.findByName("ROLE_ADMIN");
+        RoleEntity adminRole = roleService.findByName("ROLE_ADMIN");
         return userService.findByRole(adminRole);
     }
 }

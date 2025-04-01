@@ -2,22 +2,14 @@ package com.projectStore.entity;
 
 import java.util.Date;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "parameters")
+@Table(name = "parameters") // Nombre de la tabla en la base de datos
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,20 +17,23 @@ import lombok.Setter;
 public class Parameter {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Generación automática del ID
     private Long id;
 
+    @Column(nullable = false, unique = true) // El nombre debe ser único y no nulo
     private String name;
 
+    @Column(nullable = false) // El valor no puede ser nulo
     private String value;
 
+    @Column(nullable = false) // Descripción con longitud máxima de 255 caracteres
     private String description;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP) // Indica que es un campo de tipo TIMESTAMP
+    @Column(name = "last_modified") // Nombre de la columna en la base de datos
     private Date lastModified;
 
-    @ManyToOne
-    @JoinColumn(name = "modified_by")
+    @ManyToOne // Relación muchos a uno con User
+    @JoinColumn(name = "modified_by") // Llave foránea hacia la tabla de usuarios
     private User modifiedBy;
-
 }

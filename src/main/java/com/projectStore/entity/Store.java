@@ -1,46 +1,36 @@
 package com.projectStore.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(name = "stores") // Nombre de la tabla en la base de datos
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "stores")
 public class Store {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Generación automática del ID
     private Long id;
 
+    @Column(nullable = false) // El nombre de la tienda no puede ser nulo
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "location_id")
+    @Embedded // Relación embebida con la clase Location
     private Location location;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "stock_id")
+    @Transient // Este campo no se persistirá en la base de datos
     private Stock stock;
 
-    private Integer virtualStockPercentage; // Nuevo campo para % de stock virtual
+    @Column(name = "virtual_stock_percentage") // Nombre de la columna en la base de datos
+    private Integer virtualStockPercentage;
 
-    @ManyToOne
-    @JoinColumn(name = "admin_id")
-    private User admin; // Relación con el administrador de la tienda
-
+    @ManyToOne // Relación muchos a uno con User
+    @JoinColumn(name = "admin_id") // Llave foránea hacia la tabla de usuarios
+    private User admin;
 }
