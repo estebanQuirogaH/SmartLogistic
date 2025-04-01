@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class AdminService {
+public interface AdminService {
 
     private final UserService userService;
     private final RoleService roleService;

@@ -23,11 +23,15 @@ public class UserService {
     // }
 
     // Método nuevo necesario para AdminController
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con username: " + username));
+    // public User findByUsername(String username) {
+    //     return userRepository.findByUsername(username)
+    //             .orElseThrow(() -> new RuntimeException("Usuario no encontrado con username: " + username));
+    // }
+    public User findbyId(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado "));
     }
-
+    
     // Método nuevo necesario para StoreMapper
     public User findById(Long id) {
         return userRepository.findById(id)

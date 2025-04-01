@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.projectStore.service.LocationService;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,8 +30,8 @@ public class Store {
     @Embedded // Relación embebida con la clase Location
     private Location location;
 
-    @Column(name = "creator_id", nullable = false)
-    private Long creatorId;
+    // @Column(name = "creator_id", nullable = false)
+    // private Long creatorId; 
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -54,23 +56,20 @@ public class Store {
     @Transient // Este campo no se persistirá en la base de datos
     private Stock stock;
 
-    // @Column(name = "virtual_stock_percentage") // Nombre de la columna en la base de datos
-    // private Integer virtualStockPercentage;
+    @Column(name = "virtual_stock_percentage") // Nombre de la columna en la base de datos
+    private Integer virtualStockPercentage;
 
-    // @ManyToOne // Relación muchos a uno con User
-    // @JoinColumn(name = "admin_id", nullable = false) // Llave foránea hacia la tabla de usuarios
-    // private User admin;
-
-    // Para mantener compatibilidad con código existente
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", insertable = false, updatable = false)
+    @ManyToOne // Relación muchos a uno con User
+    @JoinColumn(name = "admin_id", nullable = false) // Llave foránea hacia la tabla de usuarios
     private User admin;
 
-    // Método auxiliar para establecer el admin y el creatorId al mismo tiempo
-    public void setAdmin(User admin) {
-        this.admin = admin;
-        if (admin != null) {
-            this.creatorId = admin.getId();
+    //Si el admin de la tienda siempre es el creador, entonces admin y creatorId son redundantes, y deberías dejar solo uno.
+    //Si el creador y el administrador pueden ser distintos usuarios, entonces es válido mantener ambos
+
+    public void updateLocation(String address, LocationService locationService) {
+    Location newLocation = locationService.getCoordinatesFromAddress(address);
+        if (newLocation != null) {
+            this.location = newLocation;
         }
     }
 }

@@ -40,8 +40,8 @@ public class AdminController {
     @GetMapping("/my-stores")
     public ResponseEntity<List<StoreDTO>> getMyStores() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = userService.findByUsername(auth.getName());
-        List<StoreDTO> stores = storeService.getStoresByCreator(currentUser.getId());
+        User currentUser = userService.findById(auth.getId());
+        List<StoreDTO> stores = storeService.getStoresByAdmin(currentUser.getId());
         return new ResponseEntity<>(stores, HttpStatus.OK);
     }
 
@@ -60,7 +60,7 @@ public class AdminController {
     @PostMapping("/stores")
     public ResponseEntity<StoreDTO> createStore(@RequestBody StoreCreationDTO storeDTO) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = userService.findByUsername(auth.getName());
+        User currentUser = userService.findById(auth.getId());
         
         StoreDTO createdStore = storeService.createStore(storeDTO, currentUser.getId());
         return new ResponseEntity<>(createdStore, HttpStatus.CREATED);
@@ -72,7 +72,7 @@ public class AdminController {
     @PutMapping("/stores/{id}")
     public ResponseEntity<StoreDTO> updateStore(@PathVariable Long id, @RequestBody StoreCreationDTO storeDTO) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = userService.findByUsername(auth.getName());
+        User currentUser = userService.findById(auth.getid());
         
         StoreDTO updatedStore = storeService.updateStore(id, storeDTO, currentUser.getId());
         return new ResponseEntity<>(updatedStore, HttpStatus.OK);
@@ -84,7 +84,7 @@ public class AdminController {
     @DeleteMapping("/stores/{id}")
     public ResponseEntity<Void> deleteStore(@PathVariable Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = userService.findByUsername(auth.getName());
+        User currentUser = userService.findById(auth.getId());
         
         storeService.deleteStore(id, currentUser.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

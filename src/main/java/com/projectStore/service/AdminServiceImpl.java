@@ -1,10 +1,10 @@
-package com.ProjectStore.services;
+package com.projectStore.service;
 
-import com.ProjectStore.dto.AuditDTO;
-import com.ProjectStore.entity.User;
-import com.ProjectStore.entity.RolEntity;
-import com.ProjectStore.repository.RolRepository;
-import com.ProjectStore.repository.UserRepository;
+import com.projectStore.dto.AuditDTO;
+import com.projectStore.entity.User;
+import com.projectStore.entity.RoleEntity;
+import com.projectStore.repository.RoleRepository;
+import com.projectStore.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AdminServiceImpl implements AdminService {
+public class AdminServiceImpl {
 
     @Autowired
     private UserRepository userRepository;
     
     @Autowired
-    private RolRepository rolRepository;
+    private RoleRepository rolRepository;
     
     @Autowired
     private AuditService auditService;
@@ -29,7 +29,7 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Override
+    
     public User findAdminById(Long id) {
         Optional<User> admin = userRepository.findById(id);
         if (admin.isPresent()) {
@@ -44,7 +44,6 @@ public class AdminServiceImpl implements AdminService {
         return null;
     }
 
-    @Override
     public List<User> findAllAdmins() {
         List<User> allUsers = userRepository.findAll();
         List<User> admins = new ArrayList<>();
@@ -61,7 +60,6 @@ public class AdminServiceImpl implements AdminService {
         return admins;
     }
 
-    @Override
     public boolean canAdminManageStore(Long adminId, Long storeId) {
         // Implementar lógica para verificar si el admin puede gestionar la tienda
         // (si es el creador o tiene permisos especiales)
@@ -83,15 +81,14 @@ public class AdminServiceImpl implements AdminService {
         return true; // Esto debe ser reemplazado con la lógica real
     }
 
-    @Override
-    public void logAdminAction(Long adminId, String action, String details) {
-        User admin = userRepository.findById(adminId).orElse(null);
-        String username = admin != null ? admin.getUsername() : "Unknown";
+    // public void logAdminAction(Long adminId, String action, String details) {
+    //     User admin = userRepository.findById(adminId).orElse(null);
+    //     String username = admin != null ? admin.getEmail() : "Unknown";
         
-        AuditDTO auditDTO = new AuditDTO();
-        auditDTO.setAction(action);
-        auditDTO.setDetails("Admin: " + username + " - " + details);
+    //     AuditDTO auditDTO = new AuditDTO();
+    //     auditDTO.setAction(action);
+    //     auditDTO.setDetails("Admin: " + username + " - " + details);
         
-        auditService.createAudit(auditDTO);
-    }
+    //     auditService.createAudit(auditDTO);
+    // }
 }
