@@ -1,20 +1,10 @@
 package com.projectStore.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.projectStore.dto.AdminCreationDTO;
-import com.projectStore.entity.Document;
-import com.projectStore.entity.EDocument;
-import com.projectStore.entity.Person;
-import com.projectStore.entity.RoleEntity;
-import com.projectStore.entity.Store;
 import com.projectStore.entity.User;
 import com.projectStore.service.UserService;
 import com.projectStore.entity.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -57,7 +47,7 @@ public class AdminService {
             for (Long storeId : dto.getAssignedStoreIds()) {
                 Store store = storeService.getStoreById(storeId);
                 store.setAdmin(savedAdmin);
-                storeService.updateS  tore(store);
+                storeService.updateStore(store);
 
                 auditService.registerAudit(
                         ipAddress,
