@@ -92,49 +92,49 @@ public class StoreService {
      * Crea una nueva tienda
      */
 
-     @Transactional
-     public StoreDTO createStore(StoreCreationDTO storeDTO, Long adminId) {
-         // Verificar que el usuario admin existe
-         User admin = userRepository.findById(adminId)
-                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuario admin no válido"));
-     
-         // Obtener coordenadas desde la dirección si no se provee latitud/longitud
-         Location location = (storeDTO.getLatitude() != null && storeDTO.getLongitude() != null)
-                 ? new Location(storeDTO.getAddress(), storeDTO.getLatitude(), storeDTO.getLongitude())
-                 : locationService.getCoordinatesFromAddress(storeDTO.getAddress());
-     
-         if (location == null) {
-             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                     "No se pudo obtener coordenadas para la dirección");
-         }
-     
-         // Validar la ubicación
-         if (!locationService.isValidStoreLocation(location)) {
-             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                     "La ubicación no cumple con la distancia mínima requerida entre tiendas");
-         }
-     
-         // Crear la tienda usando el mapper y asignar la ubicación
-         Store store = storeMapper.toEntity(storeDTO);
-         store.setLocation(location);
-         
-         // Asignar el mismo admin que crea la tienda como administrador
-         store.setAdmin(admin);
-     
-         // Calcular stock virtual
-         calculateVirtualStock(store);
-     
-         // Guardar la tienda
-         store = storeRepository.save(store);
-     
-         // Registrar auditoría
-         auditService.registerAudit(
-                 store.getId().toString(),
-                 "Creación de tienda: " + store.getName(),
-                 admin, store);
-     
-         return storeMapper.toDTO(store);
-     }     
+    @Transactional
+    public StoreDTO createStore(StoreCreationDTO storeDTO, Long adminId) {
+        // Verificar que el usuario admin existe
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuario admin no válido"));
+
+        // Obtener coordenadas desde la dirección si no se provee latitud/longitud
+        Location location = (storeDTO.getLatitude() != null && storeDTO.getLongitude() != null)
+                ? new Location(storeDTO.getAddress(), storeDTO.getLatitude(), storeDTO.getLongitude())
+                : locationService.getCoordinatesFromAddress(storeDTO.getAddress());
+
+        if (location == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "No se pudo obtener coordenadas para la dirección");
+        }
+
+        // Validar la ubicación
+        if (!locationService.isValidStoreLocation(location)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "La ubicación no cumple con la distancia mínima requerida entre tiendas");
+        }
+
+        // Crear la tienda usando el mapper y asignar la ubicación
+        Store store = storeMapper.toEntity(storeDTO);
+        store.setLocation(location);
+
+        // Asignar el mismo admin que crea la tienda como administrador
+        store.setAdmin(admin);
+
+        // Calcular stock virtual
+        calculateVirtualStock(store);
+
+        // Guardar la tienda
+        store = storeRepository.save(store);
+
+        // Registrar auditoría
+        auditService.registerAudit(
+                store.getId().toString(),
+                "Creación de tienda: " + store.getName(),
+                admin, store);
+
+        return storeMapper.toDTO(store);
+    }
 
     /**
      * Actualiza una tienda existente
@@ -187,7 +187,7 @@ public class StoreService {
         auditService.registerAudit(
                 id.toString(),
                 "Eliminación de tienda: " + existingStore.getName(),
-                existingStore.getAdmin(), 
+                existingStore.getAdmin(),
                 existingStore);
     }
 
@@ -218,5 +218,5 @@ public class StoreService {
     public Store updateStoreEntity(Store store) {
         return storeRepository.save(store);
     }
-    
+
 }
