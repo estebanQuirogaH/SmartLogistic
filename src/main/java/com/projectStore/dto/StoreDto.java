@@ -27,5 +27,4 @@ public class StoreDTO {
     private Map<String, Integer> virtualStock; // Producto ID -> Cantidad virtual
     private int virtual_stock_percentage;
     private User admin;
-
 }

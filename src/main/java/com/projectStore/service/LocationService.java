@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.util.List;
 
@@ -28,6 +29,13 @@ public class LocationService {
 
     @Autowired
     private AuditService auditService;
+
+    private final String apiKey;
+
+    public LocationService() {
+        Dotenv dotenv = Dotenv.load(); // Cargar variables de entorno desde .env
+        this.apiKey = dotenv.get("GOOGLE_API_KEY");
+    }
 
     /**
      * Calcular la distancia entre dos puntos usando la fórmula de Haversine
@@ -111,31 +119,30 @@ public class LocationService {
         return true;
     }
 
-   public Location getCoordinatesFromAddress(String inputAddress) {
-    try {
-        String apiKey = "AIzaSyC9YjfJujz3_cUIHa5nUYR2hd9KwF-ODNY";
-        String encodedAddress = URLEncoder.encode(inputAddress, StandardCharsets.UTF_8);
-        String url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + encodedAddress + "&key=" + apiKey;
-        
-        RestTemplate restTemplate = new RestTemplate();
-        String response = restTemplate.getForObject(url, String.class);
+    public Location getCoordinatesFromAddress(String inputAddress) {
+        try {
+            String encodedAddress = URLEncoder.encode(inputAddress, StandardCharsets.UTF_8);
+            String url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + encodedAddress + "&key=" + apiKey;
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode root = objectMapper.readTree(response);
+            RestTemplate restTemplate = new RestTemplate();
+            String response = restTemplate.getForObject(url, String.class);
 
-        if (root.has("results") && root.get("results").size() > 0) {
-            JsonNode firstResult = root.get("results").get(0);
-            String formattedAddress = firstResult.get("formatted_address").asText();
-            
-            JsonNode locationNode = firstResult.get("geometry").get("location");
-            double lat = locationNode.get("lat").asDouble();
-            double lng = locationNode.get("lng").asDouble();
-            
-            return new Location(formattedAddress, lat, lng);
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode root = objectMapper.readTree(response);
+
+            if (root.has("results") && root.get("results").size() > 0) {
+                JsonNode firstResult = root.get("results").get(0);
+                String formattedAddress = firstResult.get("formatted_address").asText();
+
+                JsonNode locationNode = firstResult.get("geometry").get("location");
+                double lat = locationNode.get("lat").asDouble();
+                double lng = locationNode.get("lng").asDouble();
+
+                return new Location(formattedAddress, lat, lng);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Para ver errores en la consola
         }
-    } catch (Exception e) {
-        // Manejo básico de error sin logs
+        return null;
     }
-    return null;
-}
 }
