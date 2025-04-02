@@ -27,6 +27,7 @@ public class AuditService {
         Audit audit = new Audit();
         audit.setTimestamp(new Date());
         audit.setIpAddress(ipAddress);
+        audit.setUserName(user.getEmail());
         audit.setDescription(description);
         audit.setUser(user);
         audit.setStore(store);

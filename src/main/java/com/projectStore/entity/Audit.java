@@ -19,6 +19,8 @@ public class Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Generación automática del ID
     private Long id;
+    @Column(name = "user_name")
+    private String userName;  // Este campo debe existir
 
     @Temporal(TemporalType.TIMESTAMP) // Indica que es un campo de tipo TIMESTAMP
     @Column(nullable = false, updatable = false) // No puede ser nulo y no se puede actualizar

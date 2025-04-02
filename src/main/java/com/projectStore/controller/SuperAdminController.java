@@ -2,6 +2,7 @@ package com.projectStore.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.projectStore.dto.AdminCreationDTO;
+import com.projectStore.dto.AuditDTO;
 import com.projectStore.entity.EDocument;
 import com.projectStore.mapper.ParameterMapper;
 import com.projectStore.service.AdminService;
@@ -22,6 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.List;
 
 @Controller
 @RequestMapping("/superadmin")
@@ -121,8 +124,19 @@ public class SuperAdminController {
             adminService.createAdmin(dto, ipAddress, principal.getName());
             redirectAttributes.addFlashAttribute("success", "Administrador creado correctamente");
             return "redirect:/superadmin/admins/create";
+        } catch (DataIntegrityViolationException e) {
+            // Manejo específico para email duplicado
+            if (e.getMessage().contains("UK6dotkott2kjsp8vw4d0m25fb7")) {
+                redirectAttributes.addFlashAttribute("error",
+                        "Ya existe un usuario con el email: " + dto.getEmail());
+            } else {
+                redirectAttributes.addFlashAttribute("error",
+                        "Error de integridad de datos al crear el administrador");
+            }
+            return "redirect:/superadmin/admins/create";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error creando administrador: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error",
+                    "Error inesperado al crear el administrador: " + e.getMessage());
             return "redirect:/superadmin/admins/create";
         }
     }
@@ -141,8 +155,13 @@ public class SuperAdminController {
     // Página de auditorías
     @GetMapping("/audits")
     public String auditsPage(Model model) {
-        model.addAttribute("audits", auditService.getAllAudits());
-        return "audits";
+        try {
+            List<AuditDTO> audits = auditService.getAllAudits();
+            model.addAttribute("audits", audits);
+            return "audits";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error cargando auditorías: " + e.getMessage());
+            return "error";
+        }
     }
-
 }
