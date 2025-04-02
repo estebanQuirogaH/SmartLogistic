@@ -1,10 +1,13 @@
 package com.projectStore.controller;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.projectStore.dto.AdminCreationDTO;
 import com.projectStore.entity.EDocument;
@@ -29,43 +32,81 @@ public class SuperAdminController {
     private final AdminService adminService;
     private final AuditService auditService;
     private final StoreService storeService;
+
+    // @GetMapping("/")
+    // public String home() {
+    // return "dashboard";
+    // }
+
     // private final ParameterMapper parameterMapper;
+    @GetMapping("/stores")
+    public String storesPage(Model model) {
+        model.addAttribute("stores", storeService.getAllStores());
+        return "stores"; // Debe existir un stores.html en /resources/templates/
+    }
 
     // Página principal
     @GetMapping
-    public String superAdminDashboard(Model model) {
+    public ModelAndView dashboard(Model model) {
+        // try {
         model.addAttribute("parameters", parameterService.getAllParameters());
         model.addAttribute("admins", adminService.getAllAdmins());
         model.addAttribute("stores", storeService.getAllStores());
-        return "dashboard";
+        return new ModelAndView("dashboard"); // dashboard.html
+        // } catch (Exception e) {
+        // model.addAttribute("error", "Error cargando el dashboard: " +
+        // e.getMessage());
+        // return "error"; // error.html
+        // }
     }
 
     // Página de configuración de parámetros
+    // @GetMapping("/parameters")
+    // public ModelAndView parametersPage(Model model) {
+    // model.addAttribute("parameters", parameterService.getAllParameters());
+    // return new ModelAndView("parameters");
+    // }
     @GetMapping("/parameters")
-    public ModelAndView parametersPage(Model model) {
-        model.addAttribute("parameters", parameterService.getAllParameters());
-        return new ModelAndView("parameters");
+    public String parametersPage(Model model) {
+        try {
+            model.addAttribute("parameters", parameterService.getAllParameters());
+            return "parameters"; // parameters.html
+        } catch (Exception e) {
+            model.addAttribute("error", "Error cargando parámetros: " + e.getMessage());
+            return "error";
+        }
     }
-
     // Actualizar parámetro
+
     @PostMapping("/parameters/update")
     public String updateParameter(
             @RequestParam String name,
             @RequestParam String value,
             HttpServletRequest request,
-            Principal principal) {
-
-        String ipAddress = request.getRemoteAddr();
-        parameterService.updateParameter(name, value, ipAddress, principal.getName());
+            Principal principal,
+            RedirectAttributes redirectAttributes) {
+        try {
+            String ipAddress = request.getRemoteAddr();
+            String username = principal.getName();
+            parameterService.updateParameter(name, value, ipAddress, username);
+            redirectAttributes.addFlashAttribute("success", "Parámetro actualizado correctamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error actualizando parámetro: " + e.getMessage());
+        }
         return "redirect:/superadmin/parameters";
     }
 
     // Página de creación de administradores
     @GetMapping("/admins/create")
-    public ModelAndView createAdminPage(Model model) {
-        model.addAttribute("stores", storeService.getAllStores());
-        model.addAttribute("documentTypes", Arrays.asList(EDocument.values()));
-        return new ModelAndView("create-admin");
+    public String createAdminPage(Model model) {
+        try {
+            model.addAttribute("stores", storeService.getAllStores());
+            model.addAttribute("documentTypes", EDocument.values());
+            return "create-admin"; // create-admin.html
+        } catch (Exception e) {
+            model.addAttribute("error", "Error cargando formulario: " + e.getMessage());
+            return "error";
+        }
     }
 
     // Crear administrador
@@ -73,11 +114,28 @@ public class SuperAdminController {
     public String createAdmin(
             @ModelAttribute AdminCreationDTO dto,
             HttpServletRequest request,
-            Principal principal) {
+            Principal principal,
+            RedirectAttributes redirectAttributes) {
+        try {
+            String ipAddress = request.getRemoteAddr();
+            adminService.createAdmin(dto, ipAddress, principal.getName());
+            redirectAttributes.addFlashAttribute("success", "Administrador creado correctamente");
+            return "redirect:/superadmin/admins/create";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error creando administrador: " + e.getMessage());
+            return "redirect:/superadmin/admins/create";
+        }
+    }
 
-        String ipAddress = request.getRemoteAddr();
-        adminService.createAdmin(dto, ipAddress, principal.getName());
-        return "redirect:/admins";
+    @GetMapping("/admins")
+    public String adminsPage(Model model) {
+        try {
+            model.addAttribute("admins", adminService.getAllAdmins());
+            return "admins"; // admins.html
+        } catch (Exception e) {
+            model.addAttribute("error", "Error cargando administradores: " + e.getMessage());
+            return "error";
+        }
     }
 
     // Página de auditorías
@@ -87,9 +145,4 @@ public class SuperAdminController {
         return "audits";
     }
 
-    @GetMapping("/logout")
-    public String logoutPage(Model model) {
-        // model.addAttribute("audits", auditService.getAllAudits());
-        return "parameters";
-    }
 }

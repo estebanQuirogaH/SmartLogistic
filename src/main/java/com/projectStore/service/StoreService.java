@@ -33,13 +33,13 @@ public class StoreService {
     // private final AuditService auditService;
     // private final UserRepository userRepository;
 
-    private StoreRepository storeRepository;
-    private ParameterRepository parameterRepository;
-    private UserRepository userRepository;
-    private StoreMapper storeMapper;
-    private LocationService locationService;
-    private AuditService auditService;
-    private ParameterService parameterService;
+    private final StoreRepository storeRepository;
+    private final ParameterRepository parameterRepository;
+    private final UserRepository userRepository;
+    private final StoreMapper storeMapper;
+    private final LocationService locationService;
+    private final AuditService auditService;
+    private final ParameterService parameterService;
 
     // obtener todas las tiendas
     // public List<Store> getAllStores() {

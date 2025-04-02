@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <title>Gestión de Parámetros</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
+
 <body>
     <header>
         <h1>Gestión de Parámetros</h1>
@@ -13,15 +15,15 @@
                 <li><a href="/superadmin/parameters">Parámetros</a></li>
                 <li><a href="/superadmin/admins/create">Crear Administradores</a></li>
                 <li><a href="/superadmin/audits">Auditorías</a></li>
-                <li><a href="/logout">Cerrar Sesión</a></li>
+                <li><a href="/auth/logout">Cerrar Sesión</a></li>
             </ul>
         </nav>
     </header>
-    
+
     <main>
         <section>
             <h2>Parámetros del Sistema</h2>
-            
+
             <table>
                 <thead>
                     <tr>
@@ -33,18 +35,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="param : ${parameters}">
-                        <td th:text="${param.name}"></td>
-                        <td th:text="${param.value}"></td>
-                        <td th:text="${param.description}"></td>
-                        <td th:text="${#dates.format(param.lastModified, 'dd/MM/yyyy HH:mm')}"></td>
+                    <tr th:each="parameter : ${parameters}">
+                        <td th:text="${parameter.name}"></td>
+                        <td th:text="${parameter.value}"></td>
+                        <td th:text="${parameter.description}"></td>
+                        <td th:text="${#dates.format(parameter.lastModified, 'dd/MM/yyyy HH:mm')}"></td>
                         <td>
-                            <button class="btn edit-btn" th:attr="data-id=${param.id},data-name=${param.name},data-value=${param.value}">Editar</button>
+                            <button class="btn edit-btn"
+                                th:attr="data-id=${parameter.id},data-name=${parameter.name},data-value=${parameter.value}">
+                                Editar
+                            </button>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            
+
             <!-- Modal de edición -->
             <div id="editModal" class="modal">
                 <div class="modal-content">
@@ -62,11 +67,11 @@
             </div>
         </section>
     </main>
-    
+
     <footer>
         <p>Sistema de Gestión de Tiendas - 2025</p>
     </footer>
-    
+
     <script>
         // Script para manejar el modal de edición
         const editBtns = document.querySelectorAll('.edit-btn');
@@ -74,7 +79,7 @@
         const closeBtn = document.querySelector('.close');
         const paramNameInput = document.getElementById('paramName');
         const paramValueInput = document.getElementById('paramValue');
-        
+
         editBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 paramNameInput.value = btn.getAttribute('data-name');
@@ -82,11 +87,11 @@
                 modal.style.display = 'block';
             });
         });
-        
+
         closeBtn.addEventListener('click', () => {
             modal.style.display = 'none';
         });
-        S
+        
         window.addEventListener('click', (event) => {
             if (event.target == modal) {
                 modal.style.display = 'none';
@@ -94,4 +99,5 @@
         });
     </script>
 </body>
+
 </html>

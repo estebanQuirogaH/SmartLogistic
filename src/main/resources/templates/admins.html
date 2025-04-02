@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Administradores - SmartLogistics</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <div class="container">
+        <h2>Lista de Administradores</h2>
+
+        <!-- Mensajes de éxito/error -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Botón para crear nuevo administrador -->
+        <a href="/superadmin/admins/create" class="btn btn-primary">Crear Nuevo Administrador</a>
+
+        <!-- Tabla de administradores -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Documento</th>
+                    <th>Tipo</th>
+                    <th>Tienda</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="admin : ${admins}">
+                    <td th:text="${admin.email}"></td>
+                    <td th:text="${admin.documentNumber}"></td>
+                    <td th:text="${admin.documentType}"></td>
+                    <td th:text="${admin.store != null ? admin.store.name : 'No asignada'}"></td>
+                    <td th:text="${admin.active ? 'Activo' : 'Inactivo'}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

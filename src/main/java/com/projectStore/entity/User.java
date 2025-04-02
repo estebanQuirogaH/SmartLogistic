@@ -28,8 +28,8 @@ public class User {
 
     @ManyToMany(fetch = FetchType.EAGER) // Relación muchos a muchos con roles
     @JoinTable(name = "user_roles", // Nombre de la tabla intermedia
-            joinColumns = @JoinColumn(name = "usuario_id"), // Llave foránea hacia User
-            inverseJoinColumns = @JoinColumn(name = "rol_id") // Llave foránea hacia Role
+            joinColumns = @JoinColumn(name = "user_id"), // Llave foránea hacia User
+            inverseJoinColumns = @JoinColumn(name = "role_id") // Llave foránea hacia Role
     )
     private List<RoleEntity> roles;
 }
