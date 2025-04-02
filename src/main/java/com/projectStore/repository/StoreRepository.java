@@ -11,6 +11,5 @@ import com.projectStore.entity.User;
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
     List<Store> findByAdmin(User user);
-    List<Store> findByCreatorId(User user);
     List<Store> findById(long id);
 }
