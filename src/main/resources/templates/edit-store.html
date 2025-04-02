@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Editar Tienda</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Editar Tienda</h1>
+        <nav>
+            <ul>
+                <li><a href="/admin">Inicio</a></li>
+                <li><a href="/admin/my-stores">Mis Tiendas</a></li>
+                <li><a href="/admin/adminStores">Todas las Tiendas</a></li>
+                <li><a href="/admin/stores/create">Crear Tienda</a></li>
+                <li><a href="/auth/logout">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Editar Tienda</h2>
+            
+            <div th:if="${error}" class="alert error" th:text="${error}"></div>
+            
+            <form th:action="@{'/admin/stores/' + ${storeDTO.id} + '/update'}" th:object="${storeDTO}" method="post" class="form-container">
+                <input type="hidden" th:field="*{id}">
+                
+                <div class="form-group">
+                    <label for="name">Nombre de la Tienda:</label>
+                    <input type="text" id="name" th:field="*{name}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Dirección:</label>
+                    <input type="text" id="address" th:field="*{address}" required>
+                    <small>Cambiar la dirección actualizará las coordenadas automáticamente</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="latitude">Latitud:</label>
+                    <input type="number" id="latitude" th:field="*{latitude}" step="0.000001">
+                </div>
+                
+                <div class="form-group">
+                    <label for="longitude">Longitud:</label>
+                    <input type="number" id="longitude" th:field="*{longitude}" step="0.000001">
+                </div>
+                
+                <div class="form-group">
+                    <h3>Stock Físico</h3>
+                    <div id="stockItems">
+                        <div th:each="item, itemStat : *{initialStock}" class="stock-item">
+                            <input type="text" th:field="*{initialStock[__${item.key}__]}" th:value="${item.key}" readonly>
+                            <input type="number" th:field="*{initialStock[__${item.key}__]}" th:value="${item.value}" min="0" required>
+                        </div>
+                    </div>
+                    <button type="button" id="addStockItem" class="btn btn-small">Agregar Producto</button>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn">Guardar Cambios</button>
+                    <a th:href="@{'/admin/stores/' + ${storeDTO.id}}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+            
+            <script>
+                document.getElementById('addStockItem').addEventListener('click', function() {
+                    const container = document.getElementById('stockItems');
+                    const index = Date.now(); // Usar timestamp para evitar colisiones
+                    const div = document.createElement('div');
+                    div.className = 'stock-item';
+                    div.innerHTML = `
+                        <input type="text" name="initialStock[nuevo_${index}]" placeholder="Nombre del producto" required>
+                        <input type="number" name="initialStock[nuevo_${index}]" placeholder="Cantidad" min="0" required>
+                        <button type="button" class="btn-remove">Eliminar</button>
+                    `;
+                    container.appendChild(div);
+                    
+                    // Agregar evento para eliminar el ítem
+                    div.querySelector('.btn-remove').addEventListener('click', function() {
+                        container.removeChild(div);
+                    });
+                });
+            </script>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sistema de Gestión de Tiendas - 2025</p>
+    </footer>
+</body>
+</html>

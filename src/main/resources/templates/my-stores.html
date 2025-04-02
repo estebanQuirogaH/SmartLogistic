@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Mis Tiendas</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Mis Tiendas</h1>
+        <nav>
+            <ul>
+                <li><a href="/admin">Inicio</a></li>
+                <li><a href="/admin/my-stores">Mis Tiendas</a></li>
+                <li><a href="/admin/adminStores">Todas las Tiendas</a></li>
+                <li><a href="/admin/stores/create">Crear Tienda</a></li>
+                <li><a href="/auth/logout">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Mis Tiendas Gestionadas</h2>
+            
+            <div th:if="${success}" class="alert success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert error" th:text="${error}"></div>
+            
+            <a href="/admin/stores/create" class="btn">Crear Nueva Tienda</a>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Dirección</th>
+                        <th>Stock Físico</th>
+                        <th>Stock Virtual</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="store : ${stores}">
+                        <td th:text="${store.id}"></td>
+                        <td th:text="${store.name}"></td>
+                        <td th:text="${store.location.address}"></td>
+                        <td th:text="${store.physicalStock.size()} + ' productos'"></td>
+                        <td th:text="${store.virtualStock.size()} + ' productos'"></td>
+                        <td>
+                            <a th:href="@{'/admin/stores/' + ${store.id}}" class="btn btn-small">Ver</a>
+                            <a th:href="@{'/admin/stores/' + ${store.id} + '/edit'}" class="btn btn-small">Editar</a>
+                            <form th:action="@{'/admin/stores/' + ${store.id} + '/delete'}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-small btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta tienda?')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sistema de Gestión de Tiendas - 2025</p>
+    </footer>
+</body>
+</html>

@@ -16,5 +16,4 @@ public class StoreCreationDTO {
     private Double latitude;
     private Double longitude;
     private Map<String, Integer> initialStock; // Producto ID -> Cantidad
-
 }

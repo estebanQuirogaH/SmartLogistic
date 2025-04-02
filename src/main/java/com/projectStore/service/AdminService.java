@@ -1,6 +1,8 @@
 package com.projectStore.service;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class AdminService {
     private final RoleService roleService;
     private final StoreService storeService;
     private final AuditService auditService;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public User createAdmin(AdminCreationDTO dto, String ipAddress, String creatorUsername) {
@@ -41,7 +44,7 @@ public class AdminService {
         // Crear el usuario administrador
         User admin = new User();
         admin.setEmail(dto.getEmail());
-        admin.setPassword(dto.getPassword()); // Nota: se debería encriptar la contraseña
+        admin.setPassword(passwordEncoder.encode(dto.getPassword())); 
 
         // Asignar el rol de administrador
         List<RoleEntity> roles = new ArrayList<>();

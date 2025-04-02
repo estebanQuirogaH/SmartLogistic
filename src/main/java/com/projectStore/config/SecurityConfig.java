@@ -29,10 +29,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/auth/**", "/error").permitAll()
                         .requestMatchers("/superadmin/**").hasAuthority("ROLE_SUPERADMIN")
+                        .requestMatchers("/admin/**").hasAnyAuthority("ROLE_SUPERADMIN", "ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/auth/login")
-                        .defaultSuccessUrl("/superadmin", true) // Cambiado de /superadmin/dashboard a /superadmin
+                        // Modificar la URL por defecto según el rol
+                        .defaultSuccessUrl("/auth/success", true)
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")

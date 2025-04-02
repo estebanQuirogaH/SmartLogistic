@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Detalles de Tienda</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Detalles de Tienda</h1>
+        <nav>
+            <ul>
+                <li><a href="/admin">Inicio</a></li>
+                <li><a href="/admin/my-stores">Mis Tiendas</a></li>
+                <li><a href="/admin/adminStores">Todas las Tiendas</a></li>
+                <li><a href="/admin/stores/create">Crear Tienda</a></li>
+                <li><a href="/auth/logout">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2 th:text="${store.name}"></h2>
+            
+            <div th:if="${error}" class="alert error" th:text="${error}"></div>
+            
+            <div class="store-details">
+                <div class="detail-card">
+                    <h3>Información General</h3>
+                    <p><strong>ID:</strong> <span th:text="${store.id}"></span></p>
+                    <p><strong>Nombre:</strong> <span th:text="${store.name}"></span></p>
+                    <p><strong>Dirección:</strong> <span th:text="${store.location.address}"></span></p>
+                    <p><strong>Coordenadas:</strong> <span th:text="${store.location.latitude} + ', ' + ${store.location.longitude}"></span></p>
+                    <p><strong>Administrador:</strong> <span th:text="${store.admin.email}"></span></p>
+                </div>
+                
+                <div class="detail-card">
+                    <h3>Stock Físico</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="stock : ${store.physicalStock}">
+                                <td th:text="${stock.key}"></td>
+                                <td th:text="${stock.value}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="detail-card">
+                    <h3>Stock Virtual</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="stock : ${store.virtualStock}">
+                                <td th:text="${stock.key}"></td>
+                                <td th:text="${stock.value}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <a th:if="${store.admin.email == #authentication.principal.username}" 
+                   th:href="@{'/admin/stores/' + ${store.id} + '/edit'}" class="btn">Editar Tienda</a>
+                <a href="/admin/my-stores" class="btn">Volver a Mis Tiendas</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sistema de Gestión de Tiendas - 2025</p>
+    </footer>
+</body>
+</html>

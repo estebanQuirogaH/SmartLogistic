@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Crear Nueva Tienda</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .pac-container {
+            z-index: 1051 !important;
+        }
+        
+        .address-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
+        .address-dropdown {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .error-message {
+            color: red;
+            display: none;
+            margin-top: 5px;
+        }
+    </style>
+    <script th:src="@{'https://maps.googleapis.com/maps/api/js?key=' + ${googleMapsApiKey} + '&libraries=places'}"></script>
+</head>
+
+<body>
+    <div class="messages">
+                <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            </div>
+    <header>
+        <h1>Crear Nueva Tienda</h1>
+        <nav>
+            <ul>
+                <li><a href="/admin">Inicio</a></li>
+                <li><a href="/admin/my-stores">Mis Tiendas</a></li>
+                <li><a href="/admin/adminStores">Todas las Tiendas</a></li>
+                <li><a href="/admin/stores/create">Crear Tienda</a></li>
+                <li><a href="/auth/logout">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Formulario de Creación de Tienda</h2>
+            
+            <div th:if="${error}" class="alert error" th:text="${error}"></div>
+            
+            <form th:action="@{/admin/stores/create}" method="post" th:object="${storeDTO}" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label for="name">Nombre de la Tienda:</label>
+                    <input type="text" id="name" th:field="*{name}" required/>
+                </div>
+        
+                <div class="form-group">
+                    <label for="addressInput">Dirección:</label>
+                    <div class="address-wrapper">
+                        <input type="text" 
+                               id="addressInput" 
+                               class="address-dropdown"
+                               placeholder="Buscar dirección..."
+                               autocomplete="off"
+                               required/>
+                        <span class="error-message" id="addressError">
+                            Por favor seleccione una dirección válida
+                        </span>
+                    </div>
+
+                    <!-- Campos ocultos para enviar al controller -->
+                    <input type="hidden" th:field="*{address}" id="formattedAddress"/>
+                    <input type="hidden" th:field="*{latitude}" id="latitude"/>
+                    <input type="hidden" th:field="*{longitude}" id="longitude"/>
+                </div>
+        
+                <!-- Stock inicial -->
+                <div class="form-group">
+                    <label>Stock Inicial</label>
+                    <div id="stockItems">
+                        <div class="stock-item">
+                            <input type="text" 
+                                   placeholder="Nombre del producto" 
+                                   class="product-name"/>
+                            <input type="number" 
+                                   placeholder="Cantidad" 
+                                   min="0"
+                                   class="product-quantity"/>
+                            <span class="error">La cantidad debe ser un número positivo</span>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addStockItem()">Agregar producto</button>
+                </div>
+
+                <input type="hidden" name="initialStock" id="initialStockInput"/>
+                <button type="submit">Crear Tienda</button>
+            </form>
+            
+            <script>
+            function addStockItem() {
+                const container = document.getElementById('stockItems');
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'stock-item';
+                itemDiv.innerHTML = `
+                    <input type="text" class="product-name" placeholder="Producto"/>
+                    <input type="number" class="product-quantity" placeholder="Cantidad" min="0"/>
+                    <button type="button" onclick="this.parentElement.remove()">Eliminar</button>
+                `;
+                container.appendChild(itemDiv);
+            }
+
+            function removeStockItem(button) {
+                button.parentElement.remove();
+            }
+
+            function validateForm() {
+                const stockMap = {};
+                const items = document.getElementsByClassName('stock-item');
+                
+                for(let item of items) {
+                    const productName = item.querySelector('.product-name').value.trim();
+                    const quantity = parseInt(item.querySelector('.product-quantity').value);
+                    
+                    if(productName && !isNaN(quantity) && quantity >= 0) {
+                        stockMap[productName] = quantity;
+                    }
+                }
+
+                if(Object.keys(stockMap).length === 0) {
+                    alert('Debe agregar al menos un producto con stock');
+                    return false;
+                }
+
+                document.getElementById('initialStockInput').value = JSON.stringify(stockMap);
+                return true;
+            }
+            </script>
+            <script>
+                let autocomplete;
+                let addressSelected = false;
+            
+                function initAutocomplete() {
+                    const input = document.getElementById('addressInput');
+                    const options = {
+                        componentRestrictions: { country: 'CO' }, // Restringir a Colombia
+                        fields: ['address_components', 'geometry', 'formatted_address']
+                    };
+            
+                    autocomplete = new google.maps.places.Autocomplete(input, options);
+                    
+                    // Manejar la selección de una dirección
+                    autocomplete.addListener('place_changed', function() {
+                        const place = autocomplete.getPlace();
+                        
+                        if (!place.geometry) {
+                            document.getElementById('addressError').style.display = 'block';
+                            addressSelected = false;
+                            return;
+                        }
+            
+                        // Ocultar mensaje de error si existe
+                        document.getElementById('addressError').style.display = 'none';
+                        
+                        // Actualizar campos ocultos
+                        document.getElementById('formattedAddress').value = place.formatted_address;
+                        document.getElementById('latitude').value = place.geometry.location.lat();
+                        document.getElementById('longitude').value = place.geometry.location.lng();
+                        
+                        addressSelected = true;
+                    });
+            
+                    // Evitar envío del formulario al presionar Enter en el campo de dirección
+                    input.addEventListener('keydown', function(event) {
+                        if (event.key === 'Enter') {
+                            event.preventDefault();
+                        }
+                    });
+            
+                    // Validar que se seleccione una dirección del dropdown
+                    input.addEventListener('input', function() {
+                        addressSelected = false;
+                    });
+                }
+            
+                function validateForm() {
+                    if (!addressSelected) {
+                        document.getElementById('addressError').style.display = 'block';
+                        return false;
+                    }
+                    return true;
+                }
+            
+                // Inicializar el autocompletado cuando la página cargue
+                window.addEventListener('load', initAutocomplete);
+                </script>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sistema de Gestión de Tiendas - 2025</p>
+    </footer>
+</body>
+</html>

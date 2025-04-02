@@ -28,11 +28,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class StoreService {
 
-    // private final StoreRepository storeRepository;
-    // private final ParameterService parameterService;
-    // private final AuditService auditService;
-    // private final UserRepository userRepository;
-
     private final StoreRepository storeRepository;
     private final ParameterRepository parameterRepository;
     private final UserRepository userRepository;
@@ -41,15 +36,17 @@ public class StoreService {
     private final AuditService auditService;
     private final ParameterService parameterService;
 
-    // obtener todas las tiendas
-    // public List<Store> getAllStores() {
-    // return storeRepository.findAll();
-    // }
+    /**
+     * Obtener todas las tiendas como DTOs
+     */
     public List<StoreDTO> getAllStores() {
         List<Store> stores = storeRepository.findAll();
         return storeMapper.toDTOList(stores);
     }
 
+    /**
+     * Buscar entidad Store por ID
+     */
     public Store findStoreEntityById(Long id) {
         return storeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -57,7 +54,7 @@ public class StoreService {
     }
 
     /**
-     * Obtiene una tienda por su ID
+     * Obtiene una tienda por su ID como DTO
      */
     public StoreDTO getStoreById(Long id) {
         Store store = storeRepository.findById(id)
@@ -65,33 +62,24 @@ public class StoreService {
         return storeMapper.toDTO(store);
     }
 
+    /**
+     * Obtiene la entidad Store por su ID
+     */
+    public Store getStoreEntityById(Long id) {
+        return storeRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tienda no encontrada"));
+    }
+
+    /**
+     * Obtiene todas las tiendas administradas por un administrador específico
+     */
     public List<Store> getStoresByAdmin(User admin) {
         return storeRepository.findByAdmin(admin);
     }
 
-    // @Transactional
-    // public Store createStore(Store store, String ipAddress, User creator) {
-    // // Validar distancia mínima con otras tiendas
-    // if (!isLocationValid(store.getLocation())) {
-    // throw new RuntimeException("La ubicación de la tienda está demasiado cerca de
-    // otra tienda existente.");
-    // }
-    // // Establecer el porcentaje de stock virtual
-    // store.setVirtualStockPercentage(parameterService.getVirtualStockPercentage());
-    // Store savedStore = storeRepository.save(store);
-    // // Registrar auditoría
-    // auditService.registerAudit(
-    // ipAddress,
-    // "Creación de tienda: " + store.getName(),
-    // creator,
-    // savedStore);
-    // return savedStore;
-    // }
-
     /**
      * Crea una nueva tienda
      */
-
     @Transactional
     public StoreDTO createStore(StoreCreationDTO storeDTO, Long adminId) {
         // Verificar que el usuario admin existe
@@ -118,7 +106,7 @@ public class StoreService {
         Store store = storeMapper.toEntity(storeDTO);
         store.setLocation(location);
 
-        // Asignar el mismo admin que crea la tienda como administrador
+        // Asignar el admin que crea la tienda
         store.setAdmin(admin);
 
         // Calcular stock virtual
@@ -141,7 +129,6 @@ public class StoreService {
      */
     @Transactional
     public Store updateStore(StoreCreationDTO storeDTO) {
-
         Store existingStore = storeRepository.findById(storeDTO.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tienda no encontrada"));
 
@@ -158,14 +145,16 @@ public class StoreService {
             }
             existingStore.setLocation(newLocation);
         }
+        
         // Actualizar la tienda
         storeMapper.updateEntityFromDTO(existingStore, storeDTO);
         calculateVirtualStock(existingStore);
         existingStore = storeRepository.save(existingStore);
-        // Registrar auditoría
+        
+        // Registrar auditoría 
         auditService.registerAudit(
                 storeDTO.getId().toString(),
-                "Actualizacion de tienda: " + existingStore.getName(),
+                "Actualización de tienda: " + existingStore.getName(),
                 existingStore.getAdmin(), existingStore);
 
         return existingStore;
@@ -180,43 +169,59 @@ public class StoreService {
         Store existingStore = storeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tienda no encontrada"));
 
+        // Verificar que el admin que solicita la eliminación es el mismo que la administra
+        if (!existingStore.getAdmin().getId().equals(adminId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, 
+                "No tienes permisos para eliminar esta tienda");
+        }
+
         // Eliminar la tienda
         storeRepository.delete(existingStore);
 
         // Registrar auditoría de eliminación
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuario admin no válido"));
+        
         auditService.registerAudit(
                 id.toString(),
                 "Eliminación de tienda: " + existingStore.getName(),
-                existingStore.getAdmin(),
+                admin,
                 existingStore);
     }
 
     /**
-     * Calcula el stock virtual basado en el stock físico y el porcentaje
-     * configurado
+     * Calcular el stock virtual basado en el stock físico y el porcentaje configurado
      */
     private void calculateVirtualStock(Store store) {
-
         // Calcular el stock virtual para cada producto
         Map<String, Integer> virtualStock = new HashMap<>();
         for (Map.Entry<String, Integer> entry : store.getPhysicalStock().entrySet()) {
             int physicalAmount = entry.getValue();
-            int virtualAmount = (int) Math
-                    .floor(physicalAmount * (parameterService.getVirtualStockPercentage() / 100.0));
+            int virtualAmount = (int) Math.floor(physicalAmount * (parameterService.getVirtualStockPercentage() / 100.0));
             virtualStock.put(entry.getKey(), virtualAmount);
         }
-
         store.setVirtualStock(virtualStock);
     }
 
-    public Store getStoreEntityById(Long id) {
-        return storeRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tienda no encontrada"));
-    }
-
+    /**
+     * Actualiza una entidad Store
+     */
     @Transactional
     public Store updateStoreEntity(Store store) {
         return storeRepository.save(store);
     }
-
+    
+    /**
+     * Convierte una entidad Store a StoreCreationDTO para edición
+     */
+    public StoreCreationDTO convertToCreationDTO(Store store) {
+        StoreCreationDTO dto = new StoreCreationDTO();
+        dto.setId(store.getId());
+        dto.setName(store.getName());
+        dto.setAddress(store.getLocation().getAddress());
+        dto.setLatitude(store.getLocation().getLatitude());
+        dto.setLongitude(store.getLocation().getLongitude());
+        dto.setInitialStock(store.getPhysicalStock());
+        return dto;
+    }
 }
