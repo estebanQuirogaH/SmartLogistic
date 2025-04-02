@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class InitialSetup implements ApplicationRunner {
 
     private final ParameterRepository parameterRepository;
+    private final RoleService roleService;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -40,9 +41,9 @@ public class InitialSetup implements ApplicationRunner {
             log.info("Iniciando configuración inicial...");
 
             // Crear roles
-            createRoleIfNotExists("ROLE_SUPERADMIN");
-            createRoleIfNotExists("ROLE_ADMIN");
-            createRoleIfNotExists("ROLE_USER");
+            createRoleIfNotExists("SUPERADMIN");
+            createRoleIfNotExists("ADMIN");
+            createRoleIfNotExists("USER");
 
             // Crear usuario superadmin
             createSuperAdminIfNotExists();
@@ -50,7 +51,7 @@ public class InitialSetup implements ApplicationRunner {
             // Crear parámetros
             createParameterIfNotExists("Distancia", "1.0",
                     "Distancia mínima en kilómetros entre tiendas físicas");
-            createParameterIfNotExists("porcentaje stock virtual", "20",
+            createParameterIfNotExists("Porcentaje Stock Virtual", "20",
                     "Porcentaje de stock para tienda virtual por defecto");
 
             log.info("Configuración inicial completada exitosamente");
@@ -99,10 +100,11 @@ public class InitialSetup implements ApplicationRunner {
     @Transactional
     private void createRoleIfNotExists(String roleName) {
         try {
-            if (roleRepository.findByName(roleName).isEmpty()) {
+            if (roleRepository.findByName("ROLE_" + roleName).isEmpty()) {
                 RoleEntity role = new RoleEntity();
-                role.setName(roleName);
+                role.setName("ROLE_" + roleName);
                 roleRepository.save(role);
+                log.info("Rol {} creado exitosamente", "ROLE_" + roleName);
             }
         } catch (Exception e) {
             log.error("Error creando rol {}: {}", roleName, e.getMessage());
